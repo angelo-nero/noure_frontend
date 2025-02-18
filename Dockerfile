@@ -15,12 +15,12 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
-# Log environment variables (be careful not to expose sensitive data)
-RUN echo "REACT_APP_API_URL during build: $REACT_APP_API_URL"
+# Create a .env file during build
+RUN echo "REACT_APP_API_URL=$REACT_APP_API_URL" > .env
 
-# Build with environment variable
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
-RUN echo "Final REACT_APP_API_URL: $REACT_APP_API_URL"
+# Log for debugging
+RUN echo "Content of .env file:"
+RUN cat .env
 
 # Build the application
 RUN npm run build
@@ -38,5 +38,5 @@ COPY --from=build /app/build ./build
 
 EXPOSE 3000
 
-# Log environment at startup
-CMD echo "Starting server with REACT_APP_API_URL: $REACT_APP_API_URL" && serve -s build -l 3000 
+# Start the application
+CMD ["serve", "-s", "build", "-l", "3000"] 
