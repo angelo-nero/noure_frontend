@@ -4,11 +4,19 @@ import { Blog } from '../types';
 import { api } from '../services/api';
 import { formatDate } from '../utils/dateFormat';
 import Navbar from './Navbar';
+import { TrashIcon, ExclamationCircleIcon, XCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+
+import { useAuth } from '../context/AuthContext';
 
 export default function BlogList() {
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
+    const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+
+    const { user } = useAuth();
+
+    const isAdmin = user?.role === 'admin';
 
     useEffect(() => {
         fetchBlogs();
@@ -23,6 +31,17 @@ export default function BlogList() {
             console.error('Error fetching blogs:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteBlog = async (blogId: number) => {
+        try {
+            await api.deleteBlog(blogId);
+            fetchBlogs();
+            setDeleteConfirm(null);
+        } catch (error) {
+            setError('Error deleting blog');
+            console.error('Error deleting blog:', error);
         }
     };
 
@@ -88,54 +107,100 @@ export default function BlogList() {
 
                     <div className="space-y-4">
                         {blogs.map((blog) => (
-                            <Link
-                                key={blog.id}
-                                to={`/blogs/${blog.id}`}
-                                className="block group"
-                            >
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md">
-                                    <div className="flex items-start gap-6">
-                                        {blog.image && (
-                                            <div className="flex-shrink-0">
-                                                <img
-                                                    src={blog.image}
-                                                    alt={blog.title}
-                                                    className="w-32 h-32 object-cover rounded-lg"
-                                                />
-                                            </div>
-                                        )}
-                                        <div className="space-y-3 flex-1">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                    <span className="text-sm font-medium text-indigo-700">
-                                                        {blog.author.username.charAt(0).toUpperCase()}
+                            <div key={blog.id} className="relative">
+                                <Link
+                                    to={`/blogs/${blog.id}`}
+                                    className="block group"
+                                >
+                                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md">
+                                        <div className="flex items-start gap-6">
+                                            {blog.image && (
+                                                <div className="flex-shrink-0">
+                                                    <img
+                                                        src={blog.image}
+                                                        alt={blog.title}
+                                                        className="w-32 h-32 object-cover rounded-lg"
+                                                    />
+                                                </div>
+                                            )}
+                                            <div className="space-y-3 flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                        <span className="text-sm font-medium text-indigo-700">
+                                                            {blog.author.username.charAt(0).toUpperCase()}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-sm text-gray-600">
+                                                        {blog.author.username}
+                                                    </span>
+                                                    <span className="text-sm text-gray-400">•</span>
+                                                    <span className="text-sm text-gray-600">
+                                                        {formatDate(blog.created_at)}
                                                     </span>
                                                 </div>
-                                                <span className="text-sm text-gray-600">
-                                                    {blog.author.username}
-                                                </span>
-                                                <span className="text-sm text-gray-400">•</span>
-                                                <span className="text-sm text-gray-600">
-                                                    {formatDate(blog.created_at)}
-                                                </span>
-                                            </div>
-                                            <h2 className="text-xl font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
-                                                {blog.title}
-                                            </h2>
-                                            <div className="flex flex-wrap gap-2">
-                                                {blog.tags.map((tag, index) => (
-                                                    <span
-                                                        key={index}
-                                                        className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full"
-                                                    >
-                                                        {tag.name}
-                                                    </span>
-                                                ))}
+                                                <h2 className="text-xl font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                                                    {blog.title}
+                                                </h2>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {blog.tags.map((tag, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full"
+                                                        >
+                                                            {tag.name}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </Link>
+                                </Link>
+
+                                {/* Admin Delete Blog Button */}
+                                {isAdmin && (
+                                    <div className="absolute top-4 right-4">
+                                        {deleteConfirm === blog.id ? (
+                                            <div className="flex items-center gap-3 bg-white p-2 rounded-lg shadow-sm">
+                                                <span className="text-sm text-gray-600 flex items-center">
+                                                    <ExclamationCircleIcon className="h-5 w-5 text-yellow-500 mr-1" />
+                                                    Delete blog?
+                                                </span>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleDeleteBlog(blog.id);
+                                                    }}
+                                                    className="text-red-600 hover:text-red-900 font-medium flex items-center gap-1"
+                                                >
+                                                    <CheckCircleIcon className="h-5 w-5" />
+                                                    Yes
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setDeleteConfirm(null);
+                                                    }}
+                                                    className="text-gray-600 hover:text-gray-900 font-medium flex items-center gap-1"
+                                                >
+                                                    <XCircleIcon className="h-5 w-5" />
+                                                    No
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setDeleteConfirm(blog.id);
+                                                }}
+                                                className="text-red-600 hover:text-red-900 font-medium flex items-center gap-1 bg-white p-2 rounded-lg shadow-sm"
+                                            >
+                                                <TrashIcon className="h-5 w-5" />
+                                                Delete
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </div>
                 </div>

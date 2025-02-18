@@ -6,6 +6,8 @@ import { api } from '../services/api';
 import { formatDate } from '../utils/dateFormat';
 import Navbar from './Navbar';
 import debounce from 'lodash/debounce';
+import { TrashIcon, ExclamationCircleIcon, XCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext';
 
 type SortOption = 'newest' | 'oldest' | 'most_liked';
 
@@ -15,6 +17,9 @@ const CodeSnippets: React.FC = () => {
     const [sortBy, setSortBy] = useState<SortOption>('newest');
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+    const { user } = useAuth();
+    const isAdmin = user?.role === 'admin';
 
     useEffect(() => {
         fetchSnippets();
@@ -55,6 +60,16 @@ const CodeSnippets: React.FC = () => {
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
         debouncedSearch(e.target.value);
+    };
+
+    const handleDeleteSnippet = async (snippetId: number) => {
+        try {
+            await api.deleteSnippet(snippetId);
+            fetchSnippets();
+            setDeleteConfirm(null);
+        } catch (error) {
+            console.error('Error deleting snippet:', error);
+        }
     };
 
     return (
@@ -102,7 +117,7 @@ const CodeSnippets: React.FC = () => {
                                 <div
                                     key={snippet.id}
                                     onClick={() => navigate(`/snippets/${snippet.id}`)}
-                                    className="bg-white shadow rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
+                                    className="bg-white shadow rounded-lg p-6 hover:shadow-md transition-shadow relative"
                                 >
                                     <div className="flex items-center justify-between">
                                         <div>
@@ -134,8 +149,56 @@ const CodeSnippets: React.FC = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-sm text-gray-500">
-                                            {formatDate(snippet.created_at)}
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-sm text-gray-500">
+                                                {formatDate(snippet.created_at)}
+                                            </div>
+                                            {isAdmin && (
+                                                <div>
+                                                    {deleteConfirm === snippet.id ? (
+                                                        <div className="flex items-center gap-3 bg-white p-2 rounded-lg shadow-sm">
+                                                            <span className="text-sm text-gray-600 flex items-center">
+                                                                <ExclamationCircleIcon className="h-5 w-5 text-yellow-500 mr-1" />
+                                                                Delete snippet?
+                                                            </span>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    handleDeleteSnippet(snippet.id);
+                                                                }}
+                                                                className="text-red-600 hover:text-red-900 font-medium flex items-center gap-1"
+                                                            >
+                                                                <CheckCircleIcon className="h-5 w-5" />
+                                                                Yes
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    setDeleteConfirm(null);
+                                                                }}
+                                                                className="text-gray-600 hover:text-gray-900 font-medium flex items-center gap-1"
+                                                            >
+                                                                <XCircleIcon className="h-5 w-5" />
+                                                                No
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                setDeleteConfirm(snippet.id);
+                                                            }}
+                                                            className="text-red-600 hover:text-red-900 font-medium flex items-center gap-1 bg-white p-2 rounded-lg shadow-sm"
+                                                        >
+                                                            <TrashIcon className="h-5 w-5" />
+                                                            Delete
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
