@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Category, Discussion, Comment, NewDiscussion, NewComment, LoginCredentials, LoginResponse, ProgrammingLanguage, CodeSnippet, NewSnippet, Snippet, Blog, Tag, NewCategory, NewProgrammingLanguage, Role, NewRole } from '../types';
 
-const API_URL = process.env.REACT_APP_API_URL || '';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
 // Create axios instance
 const axiosInstance = axios.create({
