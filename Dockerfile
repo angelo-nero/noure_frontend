@@ -1,5 +1,8 @@
 FROM node:18-alpine as build
 
+# Declare build argument
+ARG REACT_APP_API_URL
+
 WORKDIR /app
 
 # Add logging for debugging
@@ -14,6 +17,12 @@ RUN npm install
 
 # Copy the rest of the application
 COPY . .
+
+# Set environment variable from build arg
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
+# Log for debugging
+RUN echo "Building with REACT_APP_API_URL=$REACT_APP_API_URL"
 
 # Create a .env file during build
 RUN echo "REACT_APP_API_URL=$REACT_APP_API_URL" > .env
