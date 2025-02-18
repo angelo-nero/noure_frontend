@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
+import { Route } from 'react-router-dom';
+import NewsManagement from './NewsManagement';
 
 const AdminDashboard: React.FC = () => {
     return (
@@ -19,6 +21,9 @@ const AdminDashboard: React.FC = () => {
                         </Link>
                         <Link to="/admin/roles" className="block p-2 hover:bg-gray-100 rounded">
                             Role Management
+                        </Link>
+                        <Link to="/admin/news" className="block p-2 hover:bg-gray-100 rounded">
+                            News Management
                         </Link>
                     </nav>
                 </div>

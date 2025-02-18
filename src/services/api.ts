@@ -299,6 +299,24 @@ export const api = {
     deleteRole: async (id: number): Promise<void> => {
         await axiosInstance.delete(`/admin/roles/${id}/`);
     },
+
+    createNews: async (data: { title: string; body: string }) => {
+        const response = await axiosInstance.post('/news/', data);
+        return response.data;
+    },
+
+    deleteNews: async (id: number) => {
+        const response = await axiosInstance.delete(`/news/${id}/`);
+        return response.data;
+    },
+
+    deleteDiscussion: async (id: number): Promise<void> => {
+        await axiosInstance.delete(`/discussions/${id}/`);
+    },
+
+    deleteComment: async (id: number): Promise<void> => {
+        await axiosInstance.delete(`/comments/${id}/`);
+    },
 };
 
 export default api;

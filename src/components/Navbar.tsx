@@ -68,7 +68,8 @@ const Navbar = () => {
                                     {[
                                         { path: '/admin/categories', label: 'Categories' },
                                         { path: '/admin/users', label: 'Users' },
-                                        { path: '/admin/languages', label: 'Languages' }
+                                        { path: '/admin/languages', label: 'Languages' },
+                                        { path: '/admin/news', label: 'News' }
                                     ].map(({ path, label }) => (
                                         <Link
                                             key={path}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, NewUser, UpdateUser, api } from '../../services/api';
+import { PlusCircleIcon, PencilIcon, ExclamationCircleIcon, XCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
 interface EditModalProps {
     user: User;
@@ -27,7 +28,7 @@ const EditModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg w-96">
+            <div className="bg-white p-6 rounded-lg w-96 shadow-xl">
                 <h3 className="text-xl font-bold mb-4">Edit User</h3>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
@@ -67,14 +68,16 @@ const EditModal: React.FC<EditModalProps> = ({ user, onClose, onSave }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                            className="flex items-center gap-1 px-4 py-2 text-gray-600 hover:text-gray-800"
                         >
+                            <XCircleIcon className="h-5 w-5" />
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                         >
+                            <CheckCircleIcon className="h-5 w-5" />
                             Save
                         </button>
                     </div>
@@ -222,71 +225,80 @@ const UserManagement: React.FC = () => {
 
     return (
         <div className="p-6">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">User Management</h2>
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <span>User Management</span>
+            </h2>
+
+            <div className="mb-6">
                 <button
                     onClick={() => setShowCreateModal(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
                 >
+                    <PlusCircleIcon className="h-5 w-5" />
                     Create User
                 </button>
             </div>
 
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white shadow-md rounded">
-                    <thead className="bg-gray-50">
+            <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <table className="min-w-full bg-white">
+                    <thead className="bg-gray-100">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">ID</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Username</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Email</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Role</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200">
                         {users.map((user) => (
                             <tr key={user.id} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap">{user.id}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{user.username}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.id}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.username}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.role}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 py-1 rounded ${user.isActive ? 'bg-green-200' : 'bg-red-200'}`}>
+                                    <span className={`px-2 py-1 text-sm rounded ${user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                         {user.isActive ? 'Active' : 'Inactive'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-3">
                                         <button
                                             onClick={() => setEditingUser(user)}
-                                            className="text-blue-600 hover:text-blue-900 font-medium"
+                                            className="text-blue-600 hover:text-blue-900 font-medium flex items-center gap-1"
                                         >
+                                            <PencilIcon className="h-5 w-5" />
                                             Edit
                                         </button>
                                         {statusConfirm === user.id ? (
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm text-gray-600">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm text-gray-600 flex items-center">
+                                                    <ExclamationCircleIcon className="h-5 w-5 text-yellow-500 mr-1" />
                                                     {user.isActive ? 'Deactivate' : 'Activate'}?
                                                 </span>
                                                 <button
                                                     onClick={() => handleStatusToggle(user.id, user.isActive)}
-                                                    className="text-blue-600 hover:text-blue-900 font-medium"
+                                                    className="text-blue-600 hover:text-blue-900 font-medium flex items-center gap-1"
                                                 >
+                                                    <CheckCircleIcon className="h-5 w-5" />
                                                     Yes
                                                 </button>
                                                 <button
                                                     onClick={() => setStatusConfirm(null)}
-                                                    className="text-gray-600 hover:text-gray-900 font-medium"
+                                                    className="text-gray-600 hover:text-gray-900 font-medium flex items-center gap-1"
                                                 >
+                                                    <XCircleIcon className="h-5 w-5" />
                                                     No
                                                 </button>
                                             </div>
                                         ) : (
                                             <button
                                                 onClick={() => setStatusConfirm(user.id)}
-                                                className="text-blue-600 hover:text-blue-900 font-medium"
+                                                className="text-blue-600 hover:text-blue-900 font-medium flex items-center gap-1"
                                             >
+                                                <ExclamationCircleIcon className="h-5 w-5" />
                                                 Toggle Status
                                             </button>
                                         )}

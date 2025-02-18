@@ -64,12 +64,12 @@ const CodeSnippets: React.FC = () => {
                 <div className="container mx-auto px-4 py-6">
                     <div className="flex justify-between items-center mb-6">
                         <h1 className="text-2xl font-bold text-gray-900">Code Snippets</h1>
-                        <Link
-                            to="/snippets/new"
+                        <button
+                            onClick={() => setIsModalOpen(true)}
                             className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
                         >
                             Create Snippet
-                        </Link>
+                        </button>
                     </div>
                     <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
                         <div className="flex items-center gap-4 w-full sm:w-auto">

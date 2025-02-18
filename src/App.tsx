@@ -16,6 +16,8 @@ import { AuthProvider } from './context/AuthContext';
 import CategoryManagement from './components/admin/CategoryManagement';
 import LanguageManagement from './components/admin/LanguageManagement';
 import UserManagement from './components/admin/UserManagement';
+import NewsManagement from './components/admin/NewsManagement';
+import AdminDashboard from './components/admin/AdminDashboard';
 
 function App() {
     return (
@@ -58,12 +60,32 @@ function App() {
                                 </div>
                             </PrivateRoute>
                         } />
+                        <Route path="/admin/news" element={
+                            <PrivateRoute requiredRole="admin">
+                                <div className="flex flex-col min-h-screen">
+                                    <Navbar />
+                                    <main className="flex-1 mt-16">
+                                        <NewsManagement />
+                                    </main>
+                                </div>
+                            </PrivateRoute>
+                        } />
                         <Route path="/admin/users" element={
                             <PrivateRoute requiredRole="admin">
                                 <div className="flex flex-col min-h-screen">
                                     <Navbar />
                                     <main className="flex-1 mt-16">
                                         <UserManagement />
+                                    </main>
+                                </div>
+                            </PrivateRoute>
+                        } />
+                        <Route path="/admin" element={
+                            <PrivateRoute requiredRole="admin">
+                                <div className="flex flex-col min-h-screen">
+                                    <Navbar />
+                                    <main className="flex-1 mt-16">
+                                        <AdminDashboard />
                                     </main>
                                 </div>
                             </PrivateRoute>
