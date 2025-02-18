@@ -9,12 +9,28 @@ const axiosInstance = axios.create({
     baseURL: API_URL,
     headers: {
         'Content-Type': 'application/json',
-    }
+    },
+    withCredentials: true  // Important for CORS with credentials
 });
+
+// Function to get CSRF token
+const getCSRFToken = () => {
+    return document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+};
 
 // Add interceptors
 axiosInstance.interceptors.request.use(
     (config) => {
+        // Add CSRF token to headers
+        const csrfToken = getCSRFToken();
+        if (csrfToken) {
+            config.headers['X-CSRFToken'] = csrfToken;
+        }
+
+        // Add Authorization token if it exists
         const token = localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
